@@ -19,7 +19,11 @@ check:
 	uv run pre-commit run --all-files
 
 coverage:
-	uv run pytest --cov=ml_orchestrator --cov-report=xml
+	uv run pytest --cov=protocol_task --cov-report=xml
 
 mypy:
-	uv tool run mypy . --config-file pyproject.toml
+	uv tool run mypy protocol_task --config-file pyproject.toml
+
+comps:
+	uv run python -m compile
+	uv tool run pre-commit run --all-files
