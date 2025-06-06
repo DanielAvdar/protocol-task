@@ -5,25 +5,36 @@ default: install
 
 install:
 	uv sync --all-extras --all-groups --frozen
-	uv tool install pre-commit --with pre-commit-uv --force-reinstall
+	uvx pre-commit install
+
+install-docs:
+	uv sync --group docs --frozen --no-group dev
 
 update:
 	uv lock
 	uvx pre-commit autoupdate
 	$(MAKE) install
 
-test:
+test: install
 	uv run pytest
 
-check:
-	uv run pre-commit run --all-files
+check: install
+	uvx  pre-commit run --all-files
 
-coverage:
+coverage: install
 	uv run pytest --cov=protocol_task --cov-report=xml
 
-mypy:
-	uv tool run mypy protocol_task --config-file pyproject.toml
+cov: install
+	uv run pytest --cov=protocol_task  --cov-report=term-missing
 
-comps:
-	uv run python -m compile
-	uv tool run pre-commit run --all-files
+mypy: install
+	uv run mypy protocol_task --config-file pyproject.toml
+
+
+doctest: install-docs doc
+
+doc:
+	uv run --no-sync sphinx-build -M doctest docs/source docs/build/ -W --keep-going --fresh-env
+	uv run --no-sync sphinx-build -M html docs/source docs/build/ -W --keep-going --fresh-env
+
+check-all: check test mypy doc
