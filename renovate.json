@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["at any time"],
+  "labels": ["renovate"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "groupName": "uv-lock"
+  },
+  "pre-commit": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "labels": ["github-actions"]
+    },
+    {
+      "matchManagers": ["pre-commit"],
+      "labels": ["pre-commit"]
+    },
+    {
+      "matchEcosystems": ["python"],
+      "labels": ["python"]
+    }
+  ]
+}
