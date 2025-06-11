@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Union
+from typing import Any, Union, cast
 
-from ml_orchestrator.artifacts import Artifact, Input, Output
+from ml_orchestrator.artifacts import Artifact, Input, Output  # type: ignore[import-untyped]
 
 from protocol_task.protocol_class import ProtocolTask, ProtocolTaskInit
 
@@ -17,7 +17,7 @@ class TaskExecutorMeta:
     task_module: str
 
     @staticmethod
-    def _fetch_module_component(module_path) -> type(Union[ProtocolTask, ProtocolTaskInit]):
+    def _fetch_module_component(module_path: str) -> Any:
         components = module_path.split(".")
         mod = __import__(components[0])
         if len(components) == 1:
@@ -46,7 +46,7 @@ class ArtifactTaskExecutor(TaskExecutorMeta):
     def execute(
         self,
     ) -> None:
-        tp: ProtocolTask = self.task_instance
+        tp: ProtocolTask = cast(ProtocolTask, self.task_instance)
         input_artifact = tp.load_artifact(self.input_artifact.path)
         output_artifact = tp.execute_task(input_artifact)
         tp.save_artifact(output_artifact, self.output_artifact.path)
@@ -59,6 +59,6 @@ class ArtifactTaskInitExecutor(TaskExecutorMeta):
     def execute(
         self,
     ) -> None:
-        tp: ProtocolTaskInit = self.task_instance
+        tp: ProtocolTaskInit = cast(ProtocolTaskInit, self.task_instance)
         output_artifact = tp.execute_task()
         tp.save_artifact(output_artifact, self.output_artifact.path)
